@@ -1,7 +1,10 @@
 use std::error::Error;
 
 use futures::StreamExt;
+use serde_json::from_slice;
 use tokio_tungstenite::{connect_async, tungstenite::Message};
+
+use crate::discord::gateway::Event;
 
 const GATEWAY_URL: &str = "wss://gateway.discord.gg";
 
@@ -20,7 +23,8 @@ impl Session {
 
         read.for_each(|msg| async {
             if let Message::Text(text) = msg.unwrap() {
-                println!("{text:?}");
+                let e = from_slice::<Event>(text.as_bytes());
+                println!("{e:#?}");
             }
         })
         .await;
