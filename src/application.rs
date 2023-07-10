@@ -1,16 +1,23 @@
-use std::{error::Error, io};
+use std::{env, error::Error, io};
 
 use crossterm::{execute, terminal::enable_raw_mode, terminal::EnterAlternateScreen};
 use ratatui::{backend::CrosstermBackend, Terminal};
 
-pub struct Application;
+use crate::discord::gateway::Session;
+
+pub struct Application {
+    session: Session,
+}
 
 impl Application {
     pub fn new() -> Self {
-        Self
+        let token = env::var("DISCORDO_TOKEN").expect("missing authentication token");
+        Self {
+            session: Session::new(token),
+        }
     }
 
-    pub fn run(&self) -> Result<(), Box<dyn Error>> {
+    pub async fn run(&self) -> Result<(), Box<dyn Error>> {
         let mut stdout = io::stdout();
         enable_raw_mode()?;
         execute!(stdout, EnterAlternateScreen)?;
@@ -18,6 +25,6 @@ impl Application {
         let backend = CrosstermBackend::new(stdout);
         let _ = Terminal::new(backend);
 
-        Ok(())
+        self.session.run().await
     }
 }
