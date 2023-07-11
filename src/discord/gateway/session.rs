@@ -1,10 +1,10 @@
-use std::{error::Error, str::FromStr, sync::Arc, time};
+use std::{error::Error, time};
 
-use crossterm::event;
+
 use futures::StreamExt;
-use ratatui::symbols::line::THICK;
+
 use serde_json::from_slice;
-use tokio::spawn;
+
 use tokio_tungstenite::{connect_async, tungstenite::Message};
 
 use crate::discord::gateway::Event;
