@@ -1,10 +1,6 @@
-use std::{error::Error, time};
-
-
 use futures::StreamExt;
-
 use serde_json::from_slice;
-
+use std::{error::Error, time};
 use tokio_tungstenite::{connect_async, tungstenite::Message};
 
 use crate::discord::gateway::Event;
