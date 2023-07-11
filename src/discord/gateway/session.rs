@@ -1,7 +1,10 @@
-use std::error::Error;
+use std::{error::Error, str::FromStr, sync::Arc, time};
 
+use crossterm::event;
 use futures::StreamExt;
+use ratatui::symbols::line::THICK;
 use serde_json::from_slice;
+use tokio::spawn;
 use tokio_tungstenite::{connect_async, tungstenite::Message};
 
 use crate::discord::gateway::Event;
@@ -19,16 +22,31 @@ impl Session {
 
     pub async fn run(&self) -> Result<(), Box<dyn Error>> {
         let (stream, _) = connect_async(GATEWAY_URL).await?;
-        let (_, read) = stream.split();
+        let (_, mut read) = stream.split();
 
-        read.for_each(|msg| async {
+        while let Some(msg) = read.next().await {
             if let Message::Text(text) = msg.unwrap() {
-                let e = from_slice::<Event>(text.as_bytes());
-                println!("{e:#?}");
+                let e = from_slice::<Event>(text.as_bytes())?;
+                self.handle_event(e).await;
             }
-        })
-        .await;
+        }
 
         Ok(())
     }
+
+    async fn handle_event(&self, e: Event) {
+        match e {
+            Event::Hello(heartbeat_interval) => {
+                let mut interval =
+                    tokio::time::interval(time::Duration::from_millis(heartbeat_interval));
+
+                loop {
+                    interval.tick().await;
+                    self.send_heartbeat().await;
+                }
+            }
+        }
+    }
+
+    async fn send_heartbeat(&self) {}
 }
