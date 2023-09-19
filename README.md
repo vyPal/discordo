@@ -47,7 +47,7 @@ You can download and install a [prebuilt binary here](https://nightly.link/ayn2o
 ### Building from source
 
 ```bash
-git clone https://github.com/ayn2op/discordo
+git clone https://github.com/vyPal/discordo
 cd discordo
 go build .
 
