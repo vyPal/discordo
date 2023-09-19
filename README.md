@@ -1,5 +1,13 @@
 # Discordo &middot; [![ci](https://github.com/ayn2op/discordo/actions/workflows/ci.yml/badge.svg)](https://github.com/ayn2op/discordo/actions/workflows/ci.yml) [![Go Report Card](https://goreportcard.com/badge/github.com/ayn2op/discordo)](https://goreportcard.com/report/github.com/ayn2op/discordo) [![license](https://img.shields.io/github/license/ayn2op/discordo?logo=github)](https://github.com/ayn2op/discordo/blob/master/LICENSE) [![discord](https://img.shields.io/discord/1069288288034242642)](https://discord.gg/Gx48RRmKvx)
 
+# What this fork adds
+## Messages in binary
+### What?
+Allows you to prefix your message with 'ttb ' (the space bar is important) to translate the message into binary.
+Also automatically detects these binary numbers in incoming messages and replaces them with the corresponding character from the ascii table.
+### Why?
+Idk, me and my friends were messaging each other in binary and I wanted to simplify the process of encoding and decoding the messages in binary
+
 Discordo is a lightweight, secure, and feature-rich Discord terminal client. Heavily work-in-progress, expect breaking changes.
 
 ![Preview](.github/preview.png)
