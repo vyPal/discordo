@@ -8,6 +8,7 @@ Also automatically detects these binary numbers in incoming messages and replace
 ### Why?
 Idk, me and my friends were messaging each other in binary and I wanted to simplify the process of encoding and decoding the messages in binary
 
+# Discordo
 Discordo is a lightweight, secure, and feature-rich Discord terminal client. Heavily work-in-progress, expect breaking changes.
 
 ![Preview](.github/preview.png)
