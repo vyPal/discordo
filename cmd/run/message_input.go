@@ -1,6 +1,7 @@
 package run
 
 import (
+	"fmt"
 	"log"
 	"os"
 	"os/exec"
@@ -69,6 +70,18 @@ func (mi *MessageInput) onInputCapture(event *tcell.EventKey) *tcell.EventKey {
 	return event
 }
 
+func convertToBinary(text string) string {
+	if strings.HasPrefix(text, "ttb ") {
+		text = text[4:]
+		var result string
+		for _, c := range text {
+			result += fmt.Sprintf("%08b ", c)
+		}
+		return result
+	}
+	return text
+}
+
 func (mi *MessageInput) sendAction() {
 	if !mainFlex.guildsTree.selectedChannelID.IsValid() {
 		return
@@ -78,6 +91,8 @@ func (mi *MessageInput) sendAction() {
 	if text == "" {
 		return
 	}
+
+	text = convertToBinary(text)
 
 	if mainFlex.messagesText.selectedMessage != -1 {
 		ms, err := discordState.Cabinet.Messages(mainFlex.guildsTree.selectedChannelID)

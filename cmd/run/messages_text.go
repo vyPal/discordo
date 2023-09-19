@@ -4,7 +4,10 @@ import (
 	"fmt"
 	"io"
 	"log"
+	"strconv"
+	"strings"
 	"time"
+	"unicode/utf8"
 
 	"github.com/atotto/clipboard"
 	"github.com/ayn2op/discordo/config"
@@ -101,7 +104,55 @@ func (mt *MessagesText) createHeader(w io.Writer, m discord.Message, isReply boo
 }
 
 func (mt *MessagesText) createBody(w io.Writer, m discord.Message) {
-	fmt.Fprint(w, markdown.Parse(tview.Escape(m.Content)))
+	content := m.Content
+	var result string
+	var decodedBinary bool
+	for i := 0; i < len(content); {
+		if strings.HasPrefix(content[i:], "http") {
+			// Skip over URLs
+			j := i + strings.Index(content[i:], " ")
+			if j == i-1 {
+				j = len(content)
+			}
+			result += content[i:j]
+			i = j
+			continue
+		}
+		if content[i] == '0' || content[i] == '1' {
+			j := i
+			for j < len(content) && (content[j] == '0' || content[j] == '1') {
+				j++
+			}
+			if (i == 0 || content[i-1] == ' ') && (j == len(content) || content[j] == ' ' || content[j] == '<') {
+				binaryStr := content[i:j]
+				i = j + 1
+				b, err := strconv.ParseInt(binaryStr, 2, 0)
+				if err != nil {
+					continue
+				}
+				result += string(rune(b))
+				decodedBinary = true
+			} else {
+				result += content[i:j]
+				i = j + 1
+			}
+		} else {
+			result += string(content[i : i+1])
+			i++
+		}
+	}
+	if utf8.ValidString(result) {
+		fmt.Fprint(w, markdown.Parse(tview.Escape(result)))
+	} else {
+		var decoded []byte
+		for _, c := range result {
+			decoded = append(decoded, []byte(string(c))...)
+		}
+		fmt.Fprintf(w, "[::b]%s[::-]\n", string(decoded))
+	}
+	if decodedBinary {
+		fmt.Fprintf(w, " [::d](auto-decoded from bin)[::-]")
+	}
 }
 
 func (mt *MessagesText) createFooter(w io.Writer, m discord.Message) {
